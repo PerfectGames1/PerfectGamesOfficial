@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Page</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            font-family: Arial, sans-serif;
+            background-image: url('file:///C:/Users/yamha/Downloads/New%20Project.png'); /* Replace with your background image URL */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the background image */
+        }
+        .sidebar {
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .sidebar h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .sidebar button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            width: 150px;
+        }
+        .sidebar button:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            overflow-y: auto; /* Make the content scrollable */
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+        }
+        .container h1 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .link-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .link-buttons button {
+            margin: 5px 0;
+        }
+        .link-button {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Perfect Games</h1>
+        <button onclick="showMain()">Main</button>
+        <button onclick="showNews()">News</button>
+        <button onclick="showLinks()">Links</button>
+    </div>
+    <div class="content">
+        <div class="container" id="mainContent">
+            <h1>Perfect Games</h1>
+            <a href="https://example.com" class="button">Download</a>
+        </div>
+    </div>
+
+    <script>
+        function showMain() {
+            document.getElementById('mainContent').innerHTML = `
+                <h1>Main</h1>
+                <div class="link-buttons">
+                    <button class="button link-button" onclick="window.open('https://link1.com', '_blank')">Link 1</button>
+                    <button class="button link-button" onclick="window.open('https://link2.com', '_blank')">Link 2</button>
+                    <button class="button link-button" onclick="window.open('https://link3.com', '_blank')">Link 3</button>
+                    <button class="button link-button" onclick="window.open('https://link4.com', '_blank')">Link 4</button>
+                    <button class="button link-button" onclick="window.open('https://link5.com', '_blank')">Link 5</button>
+                    <button class="button" onclick="showTOS()">Terms of Service</button>
+                </div>
+            `;
+        }
+
+        function showNews() {
+            document.getElementById('mainContent').innerHTML = `
+                <h1>News</h1>
+                <p>Perfect Games has launched their official website!</p>
+            `;
+        }
+
+        function showLinks() {
+            document.getElementById('mainContent').innerHTML = `
+                <h1>Links</h1>
+                <div class="link-buttons">
+                    <button class="button" onclick="window.open('https://create.roblox.com/store/asset/18134563443/ShopUI', '_blank')">ShopUI</button>
+                    <button class="button" onclick="window.open('ComingSoon!', '_blank')">Coming Soon!</button>
+                </div>
+            `;
+        }
+
+        function showTOS() {
+            document.getElementById('mainContent').innerHTML = `
+                <h1>Terms of Service</h1>
+                <p>1. Introduction
+Welcome to Perfect Games! These Terms of Service ("Terms") govern your use of our games and services on Roblox (the "Service") provided by Perfect Games ("us", "we", or "our").
+
+By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the Terms, then you do not have permission to access the Service.
+
+2. Use of the Service
+You agree to use the Service in accordance with Roblox's Terms of Service and Community Guidelines.
+You agree not to exploit, hack, or engage in any activity that may disrupt or interfere with the Service or its users.
+You are solely responsible for any content you create or share on our games within Roblox.
+3. Intellectual Property
+All games, assets, and content within our games on Roblox are owned by Perfect Games unless otherwise stated.
+You may not copy, distribute, or exploit any part of our games without prior written permission from us.
+4. Termination
+We reserve the right to terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+5. Changes to These Terms
+We reserve the right to modify or replace these Terms at any time. The updated Terms will be effective immediately upon posting on this page.</p>
+            `;
+        }
+    </script>
+</body>
+</html>
