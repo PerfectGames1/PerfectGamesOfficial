@@ -36,6 +36,28 @@ game.Players.PlayerAdded:Connect(function(plr) -- this is to get the player once
 		end
 	end
 	
+	plr.CharacterAdded:Connect(function(character)
+		local root = character:WaitForChild("HumanoidRootPart")
+		
+		task.wait(.1)
+		local checkpointsFolder = workspace:FindFirstChild("Checkpoints")
+		if checkpointsFolder then
+			local targetSpawn = checkpointsFolder:FindFirstChild(tostring(level.Value))
+			if targetSpawn and targetSpawn:IsA("BasePart") then
+				character:PivotTo(targetSpawn.CFrame + Vector3.new(0, 4, 0))
+				print("plr has been cframed")
+				
+				plr.PlayerGui.Spawn.Text.Visible = true
+				local info = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false)
+				tweenService:Create(plr.PlayerGui.Spawn.Text, info, {TextTransparency = 0}):Play()
+				task.wait(1)
+				tweenService:Create(plr.PlayerGui.Spawn.Text, info, {TextTransparency = 1}):Play()
+				task.wait(1)
+				plr.PlayerGui.Spawn.Text.Visible = false
+			end
+		end
+	end)
+	
 	local touched1 = false
 	
 	local touched2 = false
