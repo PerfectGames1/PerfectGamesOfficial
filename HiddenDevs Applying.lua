@@ -3,6 +3,9 @@ local tweenService = game:GetService("TweenService")  -- variable for creating a
 local mainFolder = workspace.Obby
 local obstacles = mainFolder.Obstacles -- this is to store the variable of the obstacles
 
+local DataStore = game:GetService("DataStoreService")
+local playerStore = DataStore:GetDataStore("ObbyData_V1")
+
 game.Players.PlayerAdded:Connect(function(plr) -- this is to get the player once they join
 	local folder = Instance.new("Folder") -- this is to make the leaderstats folder
 	folder.Name = "leaderstats"  -- leaderstats as the name of the folder
@@ -16,9 +19,34 @@ game.Players.PlayerAdded:Connect(function(plr) -- this is to get the player once
 	rank.Parent = folder
 	rank.Name = "Rank"
 	
+	local savedData
+	local success, errorMessage = pcall(function()
+		savedData = playerStore:GetAsync(plr.UserId .. "-Save")
+	end)
+	
+	if success and savedData then
+		level.Value = savedData.Level
+		rank.Value = savedData.Rank
+		print("data has been loaded")
+	else
+		level.Value = 0
+		rank.Value = "NONE"
+		if not success then
+			plr:Kick("Your data did not save correctly, please attempt a rejoin.")
+		end
+	end
+	
 	local touched1 = false
 	
 	local touched2 = false
+	
+	local ranks = {
+		["Rank1"] = {Cost = 1, Title = "BASIC"},
+		["Rank2"] = {Cost = 2, Title = "ROOKIE"},
+		["Rank3"] = {Cost = 3, Title = "AVERAGE"},
+		["Rank4"] = {Cost = 4, Title = "SWEAT"},
+		["Rank5"] = {Cost = 5, Title = "MASTER"}
+	}
 	
 	local function onTouch1() -- creating a function for when checkpoint is hit
 		if touched1 == false then
@@ -53,130 +81,35 @@ game.Players.PlayerAdded:Connect(function(plr) -- this is to get the player once
 	local frame2 = holder.frame2
 	local scrolling = frame2.ScrollingFrame -- variables to hold the user interface
 	
-	local function rank1Clicked()
-		if level.Value >= 1 then
-			rank.Value = "BASIC"
-			level.Value = level.Value -1
-			screen.holder3.Cover.Visible = true
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
-			task.wait(4)
-			plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
-			task.wait(1)
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
-			if touched1 == true then
-				touched1 = false
-				touched2 = false
-				obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
-				obstacles["Level 2"].Checkpoint2.CanTouch = true
-				level.Value = 0
-			end
-			task.wait(.5)
-			screen.holder3.Cover.Visible = false
+	for _, UiButtons in pairs(scrolling:GetChildren()) do
+		if UiButtons:IsA("GuiButton") and ranks[UiButtons.Name] then
+			UiButtons.MouseButton1Click:Connect(function()
+				local rankData = ranks[UiButtons.Name]
+				if level.Value >= rankData.Cost then
+					
+					rank.Value = UiButtons.Name
+					level.Value = level.Value - rankData.Cost
+					screen.holder3.Cover.Visible = true
+					tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
+					tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
+					task.wait(4)
+					plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
+					task.wait(1)
+					tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
+					tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
+					if touched1 == true then
+						touched1 = false
+						touched2 = false
+						obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
+						obstacles["Level 2"].Checkpoint2.CanTouch = true
+						level.Value = 0
+					end
+					task.wait(.5)
+					screen.holder3.Cover.Visible = false
+				end
+			end)
 		end
 	end
-	scrolling.Rank1.MouseButton1Click:Connect(rank1Clicked)
-	
-	local function rank2Clicked()
-		if level.Value >= 2 then
-			rank.Value = "ROOKIE"
-			level.Value = level.Value -2
-			screen.holder3.Cover.Visible = true
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
-			task.wait(4)
-			plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
-			task.wait(1)
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
-			if touched1 == true then
-				touched1 = false
-				touched2 = false
-				obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
-				obstacles["Level 2"].Checkpoint2.CanTouch = true
-				level.Value = 0
-			end
-			task.wait(.5)
-			screen.holder3.Cover.Visible = false
-		end
-	end
-	scrolling.Rank2.MouseButton1Click:Connect(rank2Clicked)
-	
-	local function rank3Clicked()
-		if level.Value >= 3 then
-			rank.Value = "AVERAGE"
-			level.Value = level.Value -3
-			screen.holder3.Cover.Visible = true
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
-			task.wait(4)
-			plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
-			task.wait(1)
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
-			if touched1 == true then
-				touched1 = false
-				touched2 = false
-				obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
-				obstacles["Level 2"].Checkpoint2.CanTouch = true
-				level.Value = 0
-			end
-			task.wait(.5)
-			screen.holder3.Cover.Visible = false
-		end
-	end
-	scrolling.Rank3.MouseButton1Click:Connect(rank3Clicked)
-	
-	local function rank4Clicked()
-		if level.Value >= 4 then
-			rank.Value = "SWEAT"
-			level.Value = level.Value -4
-			screen.holder3.Cover.Visible = true
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
-			task.wait(4)
-			plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
-			task.wait(1)
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
-			if touched1 == true then
-				touched1 = false
-				touched2 = false
-				obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
-				obstacles["Level 2"].Checkpoint2.CanTouch = true
-				level.Value = 0
-			end
-			task.wait(.5)
-			screen.holder3.Cover.Visible = false
-		end
-	end
-	scrolling.Rank4.MouseButton1Click:Connect(rank4Clicked)
-	
-	local function rank5Clicked()
-		if level.Value >= 5 then
-			rank.Value = "MASTER"
-			level.Value = level.Value -5
-			screen.holder3.Cover.Visible = true
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 0}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 10}):Play()
-			task.wait(4)
-			plr.Character.HumanoidRootPart.CFrame = mainFolder.RebirthTeleport.CFrame
-			task.wait(1)
-			tweenService:Create(screen.holder3.Cover, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {BackgroundTransparency = 1}):Play()
-			tweenService:Create(screen.holder3.Cover.UIScale, TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Scale = 0}):Play()
-			if touched1 == true then
-				touched1 = false
-				touched2 = false
-				obstacles["Level 1"].Checkpoint1.CanTouch = true -- enables the checkpoint so the player can play again
-				obstacles["Level 2"].Checkpoint2.CanTouch = true
-				level.Value = 0
-			end
-			task.wait(.5)
-			screen.holder3.Cover.Visible = false
-		end
-	end
-	scrolling.Rank5.MouseButton1Click:Connect(rank5Clicked)
 	
 	local function clickedRank()
 		for _, allInterface in pairs(plr.PlayerGui.MainUI:GetChildren()) do 
@@ -210,51 +143,74 @@ game.Players.PlayerAdded:Connect(function(plr) -- this is to get the player once
 		tweenService:Create(btn.UIScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false), {Scale = 1}):Play()
 	end
 	btn.MouseLeave:Connect(unhover)
+	
+	screen.TwoXSpeed.MouseButton1Click:Connect(function()
+		if plr.leaderstats.Level.Value >= screen.TwoXSpeed.Cost.Value then
+			plr.Character.Humanoid.WalkSpeed = plr.Character.Humanoid.WalkSpeed +16
+			plr.leaderstats.Level.Value = plr.leaderstats.Level.Value - screen.TwoXSpeed.Cost.Value
+		end
+	end)
+	
+	screen.TwoXSpeedAll.MouseButton1Click:Connect(function()
+		if plr.leaderstats.Level.Value >= screen.TwoXSpeedAll.Cost.Value then
+			for _, allPlayers in pairs(game.Players:GetPlayers()) do
+				allPlayers.Character.Humanoid.WalkSpeed = allPlayers.Character.Humanoid.WalkSpeed +16
+			end
+			plr.leaderstats.Level.Value = plr.leaderstats.Level.Value - screen.TwoXSpeedAll.Cost.Value
+		end
+	end)
+	
+	screen.TwoXJump.MouseButton1Click:Connect(function()
+		if plr.leaderstats.Level.Value >= screen.TwoXJump.Cost.Value then
+			for _, allPlayers in pairs(game.Players:GetPlayers()) do
+				allPlayers.Character.Humanoid.JumpPower = allPlayers.Character.Humanoid.JumpPower +50
+			end
+			plr.leaderstats.Level.Value = plr.leaderstats.Level.Value - screen.TwoXJump.Cost.Value
+		end
+	end)
 end)
-local function disappearTouch()
-	obstacles["Level 2"].One.CanTouch = false
-	tweenService:Create(obstacles["Level 2"].One, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 1}):Play()
-	task.wait(2)
-	obstacles["Level 2"].One.CanCollide = false
-	task.wait(3)
-	tweenService:Create(obstacles["Level 2"].One, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 0}):Play()
-	obstacles["Level 2"].One.CanCollide = true
-	obstacles["Level 2"].One.CanTouch = true
-end
-obstacles["Level 2"].One.Touched:Connect(disappearTouch)
+task.wait(3)
+local obstacles = {
+	["One"] = true,
+	["Two"] = true,
+	["Three"] = true,
+	["Four"] = true,
+	["Five"] = true, 
+	["Six"] = true,
+	["Seven"] = true,
+	["Eight"] = true
+}
 
-local function disappearTouch2()
-	obstacles["Level 2"].Two.CanTouch = false
-	tweenService:Create(obstacles["Level 2"].Two, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 1}):Play()
-	task.wait(2)
-	obstacles["Level 2"].Two.CanCollide = false
-	task.wait(3)
-	tweenService:Create(obstacles["Level 2"].Two, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 0}):Play()
-	obstacles["Level 2"].Two.CanCollide = true
-	obstacles["Level 2"].Two.CanTouch = true
+for _, allParts in pairs(workspace.Obby.Obstacles:GetChildren()) do
+	if allParts:IsA("BasePart") and obstacles[allParts.Name] then
+		allParts.Touched:Connect(function()
+			if allParts.CanTouch == true then
+			allParts.CanTouch = false
+			tweenService:Create(allParts, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 1}):Play()
+			task.wait(2)
+			allParts.CanCollide = false
+			task.wait(3)
+			tweenService:Create(allParts, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 0}):Play()
+			allParts.CanCollide = true
+			allParts.CanTouch = true
+			end
+		end)
+	end
 end
-obstacles["Level 2"].Two.Touched:Connect(disappearTouch2)
 
-local function disappearTouch3()
-	obstacles["Level 2"].Three.CanTouch = false
-	tweenService:Create(obstacles["Level 2"].Three, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 1}):Play()
-	task.wait(2)
-	obstacles["Level 2"].Three.CanCollide = false
-	task.wait(3)
-	tweenService:Create(obstacles["Level 2"].Three, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 0}):Play()
-	obstacles["Level 2"].Three.CanCollide = true
-	obstacles["Level 2"].Three.CanTouch = true
-end
-obstacles["Level 2"].Three.Touched:Connect(disappearTouch3)
-
-local function disappearTouch4()
-	obstacles["Level 2"].Four.CanTouch = false
-	tweenService:Create(obstacles["Level 2"].Four, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 1}):Play()
-	task.wait(2)
-	obstacles["Level 2"].Four.CanCollide = false
-	task.wait(3)
-	tweenService:Create(obstacles["Level 2"].Four, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false), {Transparency = 0}):Play()
-	obstacles["Level 2"].Four.CanCollide = true
-	obstacles["Level 2"].Four.CanTouch = true
-end
-obstacles["Level 2"].Four.Touched:Connect(disappearTouch4)
+game.Players.PlayerRemoving:Connect(function(plr)
+	local dataSave = {
+		Level = plr.leaderstats.Level.Value,
+		Rank = plr.leaderstats.Rank.Value
+	}
+	
+	local success, errorMessage = pcall(function()
+		playerStore:SetAsync(plr.UserId .. "-Save", dataSave)
+	end)
+	
+	if success then
+		print("your data has been saved")
+	else
+		warn("there has been an error saving data, maybe error inside output or missing leaderstats?" .. errorMessage)
+	end
+end)
